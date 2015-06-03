@@ -144,6 +144,41 @@ form.name.value
 # => 'No name'
 ```
 
+### Private attribute
+Sometimes input needs to be coerced or validated but should not be available outside the form. The classic example is password confirmation in a form.
+
+```rb
+class PasswordForm < Vulcanize::Form
+  attribute :password, Password, :required => true
+  attribute :password_confirmation, Password, :private => true
+
+  def valid?
+    unless password == password_confirmation
+      error = ArgumentError.new 'does not match'
+      errors.add(password_confirmation, error)
+    end
+    super
+  end
+end
+```
+
+### Renamed attribute
+Vulcanize can also be used to handle any input that can be cast as a hash. JSON data for example. It may be that input fields need renaming. That can be done with the from attribute
+
+```rb
+class RenameForm < Vulcanize::Form
+  attribute :name, Name, :from => 'display_name'
+end
+
+form = RenameForm.new :display_name => 'Peter'
+
+form.valid?
+# => true
+
+form.values
+# => {:name => #<Name:0x00000002a579e8 @value="Peter">}
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/vulcanize/fork )
