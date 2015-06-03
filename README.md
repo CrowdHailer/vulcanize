@@ -179,6 +179,47 @@ form.values
 # => {:name => #<Name:0x00000002a579e8 @value="Peter">}
 ```
 
+### Checkboxes
+A common requirement is handling checkboxes, there are two distinct patterns. The optional checkbox and the agreement checkbox.
+
+##### Optional checkbox
+This checkbox is true when checked and false when left unchecked
+
+```rb
+class OptionalForm < Vulcanize::Form
+  attribute :recieve_mail, Vulcanize::Checkbox, :default => false
+end
+
+form = OptionalForm.new
+
+form.valid?
+# => true
+
+form.values
+# => {:recieve_mail => false}
+```
+
+##### Agreement checkbox
+This checkbox must be selected to continue. The form should be invalid without its selection
+
+```rb
+class AgreementForm < Vulcanize::Form
+  attribute :agree_to_terms, Vulcanize::Checkbox, :required => true
+end
+
+form = AgreementForm.new
+
+form.valid?
+# => false
+
+form.errors
+# => {:agree_to_terms => #<Vulcanize::AttributeMissing: is not present>}
+```
+
+##### Note on Vulcanize::Checkbox
+*Vulcanize checkbox returns true for an input of 'on'. For all other values it raises an InvalidError instead of returning false. This is to help debug if fields are missnamed.* 
+
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/vulcanize/fork )
