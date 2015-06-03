@@ -98,6 +98,52 @@ form.values
 # => {:name => nil}
 ```
 
+### Default attribute
+When declaring attributes a default may be provided for when the input is nil or empty.
+
+```rb
+class NullName
+  def value
+    'No name'
+  end
+end
+
+class DefaultForm < Vulcanize::Form
+  attribute :name, Name, :default => NullName.new
+end
+
+form = DefaultForm.new :name => ''
+
+form.valid?
+# => true
+
+form.errors
+# => {:name => #<Vulcanize::AttributeMissing: is not present>}
+
+form.values
+# => {:name =>nil}
+```
+
+### Required attribute
+Perhaps instead of handling missing values you want the form to be invalid when values are missing. This can be set using the required option.
+
+```rb
+class RequiredForm < Vulcanize::Form
+  attribute :name, Name, :required => true
+end
+
+form = RequiredForm.new :name => ''
+
+form.valid?
+# => false
+
+form.values
+# => {:name => #<NullName:0x00000001f457f8>}
+
+form.name.value
+# => 'No name'
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/vulcanize/fork )
