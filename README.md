@@ -8,6 +8,8 @@ Few notes on Documentation Driven Design
 - [one](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
 - [two](http://24ways.org/2010/documentation-driven-design-for-apis)
 
+**[Pull request for comments](https://github.com/CrowdHailer/vulcanize/pull/1)**
+
 ## Installation
 
 Add this line to your application's Gemfile:
