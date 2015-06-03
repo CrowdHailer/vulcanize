@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Vulcanize::VERSION
   spec.authors       = ["Peter Saxton"]
   spec.email         = ["peterhsaxton@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
+  spec.summary       = %q{Form objects built on the typetanic forge protocol}
   spec.description   = %q{TODO: Write a longer description. Optional.}
   spec.homepage      = ""
   spec.license       = "MIT"
