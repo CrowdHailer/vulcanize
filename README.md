@@ -2,6 +2,12 @@
 
 Build simple form objects for custom value objects objects.
 
+# NO CODE HERE
+After spiking this general idea in another [project](https://github.com/CrowdHailer/scorched-blog/blob/master/lib/vulcanize.rb) I have decided to see what order I can bring to the project by defining the docs first. So have a read through and if you like it make a comment and if you don't also make a comment.
+Few notes on Documentation Driven Design
+- [one](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
+- [two](http://24ways.org/2010/documentation-driven-design-for-apis)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -235,11 +241,21 @@ class Article < String
     new raw
   end
 end
-
 ```
+## TODO
+- section on testing
+- actual api docs, perhaps formatted as in [AllSystems](https://github.com/CrowdHailer/AllSystems#user-content-docs)
+- Handling collections, not necessary if always using custom collections
 
+## Questions
+- Form object with required and default might make sense if default acts as null object?
+- Form object should have overwritable conditions on empty
+- Check out virtus Array and Hash they might need to be included in awesomeness
+  - There is no need for and array or hash type if Always defining collections
+  - general nesting structure checkout useuful music batch
 
 ## Contributing
+There is no code here yet. So at the moment feel free to contribute around discussing these docs. pull request with your suggestion sounds perfect.
 
 1. Fork it ( https://github.com/[my-github-username]/vulcanize/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
