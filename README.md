@@ -1,9 +1,9 @@
 # Vulcanize
 
-Build simple form objects for custom value objects objects.
+Build simple form objects for custom value objects.
 
 # NO CODE HERE
-After spiking this general idea in another [project](https://github.com/CrowdHailer/scorched-blog/blob/master/lib/vulcanize.rb) I have decided to see what order I can bring to the project by defining the docs first. So have a read through and if you like it make a comment and if you don't also make a comment.
+After spiking this general idea in another [project](https://github.com/CrowdHailer/scorched-blog/blob/master/lib/vulcanize.rb) I have decided to see what clarity can be brought to this project by defining the docs first. So have a read through and add whatever comments you want. Just remember this code doesn't do anything yet.
 Few notes on Documentation Driven Design
 - [one](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
 - [two](http://24ways.org/2010/documentation-driven-design-for-apis)
@@ -26,10 +26,11 @@ Or install it yourself as:
 
 ## Usage
 
-The first step is to create your value object. Your domain specific value object should implement the `typetanic/forge` protocol. The forge method can take any number of arguments to create a new value. It should accept a block which is called with the error should creating the value object fail.
-The forging of a value object should carry out all coercions and validations specific to that type. Vulcanize form objects only know is a value is invalid or missing, not how an object might be invalid
+The first step is to create your value object. Your domain specific value object should implement the `typetanic/forge` protocol. The forge method can take any number of arguments to create a new value. It should also accept a block which is called with the error should creating the value object fail.
 
-As an example here is a very simple implementation of a name object.
+The forging of a value object should carry out all coercions and validations specific to that type. Vulcanize forms only know is a value is invalid or missing, not the reasons for a value to be invalid.
+
+As an example here is a very simple implementation of a name object which has these conditions.
 - It will always be capitalized
 - It must be between 2 and 20 characters
 
@@ -51,7 +52,8 @@ class Name
 end
 ```
 
-To use this create the following form
+Attributes in a form are defined with an attribute name and an attribute type. Often these will be the same but it may be the case that a form accepts attributes called first_name and last_name and where they both have the type name.
+We can use our Name value object in a form as follows.
 
 ```rb
 class Form < Vulcanize::Form
@@ -144,7 +146,7 @@ form.valid?
 # => false
 
 form.values
-# => {:name => #<NullName:0x00000001f457f8>}
+# => {:name => nil}
 
 form.name.value
 # => 'No name'
@@ -226,7 +228,7 @@ form.errors
 *Vulcanize checkbox returns true for an input of 'on'. For all other values it raises an InvalidError instead of returning false. This is to help debug if fields are missnamed.*
 
 ## Standard types
-Vulcanize encourages not using ruby primitives, it is often miss guided. I.e. 12 June 2030 is not a valid D.O.B for your users and '<|X!#' is not valid article body. However sometimes it is appropriate or prudent to use them for that reason you can specify the following as types of attributes
+Vulcanize encourages using custom domain objects over ruby primitives. it is often miss-guided to use the primitives. I.e. 12 June 2030 is not a valid D.O.B for your users and '<|X!#' is not valid article body. However sometimes it is appropriate or prudent to use the basic types and for that reason you can specify the following as types of attributes.
 
 - String
 - Integer
@@ -236,7 +238,7 @@ Vulcanize encourages not using ruby primitives, it is often miss guided. I.e. 12
 Often a reason to use standard types is because domain limitations on an input have not yet been defined. Instead of staying with strings consider using this minimal implementation.
 
 ```rb
-class Article < String
+class ArticleBody < String
   def self.forge(raw)
     new raw
   end
