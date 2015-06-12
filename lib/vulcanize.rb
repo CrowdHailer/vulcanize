@@ -21,6 +21,18 @@ module Vulcanize
           raise
         end
       end
+      tmp_attributes = attributes
+
+      define_method :attributes do
+        tmp_attributes
+      end
+    end
+    include Enumerable
+
+    def each
+      attributes.each do |attribute, value|
+        yield attribute, value
+      end
     end
 
     def initialize(input={})
@@ -28,7 +40,7 @@ module Vulcanize
     end
 
     def valid?
-      self.class.attributes.keys.each(&method(:send))
+      attributes.keys.each(&method(:send))
       true
     rescue
       false

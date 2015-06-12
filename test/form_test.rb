@@ -29,6 +29,11 @@ module Vulcanize
       assert_equal true, form.valid?
     end
 
+    def test_enumerates
+      form = klass.new :item => 'valid'
+      assert_equal [[:item, 'valid']], form.map { |name, value| return name, value }
+    end
+
     def test_raises_error_if_invalid_input
       form = klass.new :item => 'invalid'
       assert_raises ArgumentError do
