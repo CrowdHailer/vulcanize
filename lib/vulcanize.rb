@@ -28,7 +28,7 @@ module Vulcanize
       end
     end
     include Enumerable
-
+    # http://blog.arkency.com/2014/01/ruby-to-enum-for-enumerator/
     def each
       attributes.each do |attribute, value|
         yield attribute, value
