@@ -31,7 +31,8 @@ module Vulcanize
 
     def test_enumerates
       form = klass.new :item => 'valid'
-      assert_equal [[:item, 'valid']], form.map { |name, value| return name, value }
+      map = form.map { |name, value| [name, value.class] }
+      assert_equal [[:item, Type]], map
     end
 
     def test_raises_error_if_invalid_input

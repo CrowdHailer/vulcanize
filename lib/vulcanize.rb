@@ -31,7 +31,7 @@ module Vulcanize
     # http://blog.arkency.com/2014/01/ruby-to-enum-for-enumerator/
     def each
       attributes.each do |attribute, value|
-        yield attribute, value
+        yield attribute, public_send(attribute)
       end
     end
 
