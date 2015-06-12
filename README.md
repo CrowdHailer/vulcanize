@@ -28,9 +28,7 @@ Or install it yourself as:
 
 ## Usage
 
-The first step is to create your value object. Your domain specific value object should implement the `typetanic/forge` protocol. The forge method can take any number of arguments to create a new value. It should also accept a block which is called with the error should creating the value object fail.
-
-The forging of a value object should carry out all coercions and validations specific to that type. Vulcanize forms only know is a value is invalid or missing, not the reasons for a value to be invalid.
+The first step is to create your domain object. It should throw an ArgumentError if initialized with invalid arguments.
 
 As an example here is a very simple implementation of a name object which has these conditions.
 - It will always be capitalized
@@ -40,17 +38,11 @@ As an example here is a very simple implementation of a name object which has th
 class Name
   def initialize(raw)
     section = raw[/^\w{2,20}$/]
-    raise ArgumentError, 'is not valid' unless section
+    raise ArgumentError unless section
     @value = section.capitalize
   end
 
   attr_reader :value
-
-  def self.forge(raw)
-    new raw
-  rescue ArgumentError => err
-    yield err
-  end
 end
 ```
 
@@ -61,18 +53,23 @@ We can use our Name value object in a form as follows.
 class Form < Vulcanize::Form
   attribute :name, Name
 end
+```
 
+Basic usage of the form is as follows.
+
+```rb
 # Create a form with a valid name
 form = Form.new :name => 'Peter'
 
 form.valid?
 # => true
 
-form.errors
-# => {}
+form.email
+# => #<Name:0x00000002a579e8 @value="Peter">
 
-form.values
-# => {:name => #<Name:0x00000002a579e8 @value="Peter">}
+form.each { |attribute, value| puts "#{attribute}, #{value}" }
+# => :name, #<Name:0x00000002a579e8 @value="Peter">
+
 
 # Create a form with an invalid name
 form = Form.new :name => '<DANGER!!>'
@@ -80,14 +77,34 @@ form = Form.new :name => '<DANGER!!>'
 form.valid?
 # => false
 
-form.validate!
-# !! Vulcanize::InvalidForm
+form.email
+# !! ArgumentError
+```
 
-form.errors
-# => {:name => #<ArgumentError: is not valid>}
+### Error Handling
 
-form.values
-# => {:name => '<DANGER!!>'}
+return raw input for editing
+
+```rb
+form = Form.new :name => '<DANGER!!>'
+
+value = form.email { |raw| raw }
+error = form.email { |_, error| error }
+```
+
+return default
+
+```rb
+form = Form.new :name => '<DANGER!!>'
+
+value = form.start_date { |raw| DateTime.now }
+error = form.start_date { |_, error| error }
+```
+
+This allows you to use the form in place of a domain object.
+
+```rb
+user.email { |raw, error| #Never called, as needed because user email always valid }
 ```
 
 ### Null input
