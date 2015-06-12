@@ -1,20 +1,27 @@
 require "vulcanize/version"
 
 module Vulcanize
+  # module Checkbox
+  #   def new(raw)
+  #     return true if raw == 'on'
+  #     raise ArgumentError
+  #   end
+  # end
   class Form
     def self.attributes
       @attributes ||= {}
     end
 
-
-    def self.attribute(attribute_name, type, required: false, default: nil, from: nil)
+    def self.attribute(attribute_name, type, required: false, default: nil, from: nil, private: false)
+      # attribute_name = attribute_name.to_sym
       attributes[attribute_name] = true
-      # from = from || attribute_name
+      # from = from.to_sym || attribute_name
       define_method attribute_name do |&block|
         begin
           raw = input[attribute_name]
           # raw = self.input.fetch(from) { '' }
           # raise MissingAttribute if required && raw.empty?
+          # return default if raw.empty?
           return type.new raw
         rescue ArgumentError => err
           return block.call raw, err if block
@@ -22,6 +29,7 @@ module Vulcanize
         end
       end
       tmp_attributes = attributes
+      # private attribute_name if private
 
       define_method :attributes do
         tmp_attributes
@@ -36,12 +44,14 @@ module Vulcanize
     end
 
     def initialize(input={})
+      # handle symbolize keys
       @input = input
     end
 
     def valid?
       attributes.keys.each(&method(:send))
       true
+      # handle argument error an missing error.
     rescue
       false
     end
