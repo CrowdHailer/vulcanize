@@ -10,7 +10,7 @@ module Vulcanize
 
     def self.attribute(attribute_name, type, required: false, default: nil, from: nil, private: false)
       # attribute_name = attribute_name.to_sym
-      attributes[attribute_name] = true
+      attributes[attribute_name] = private
       # from = from.to_sym || attribute_name
       define_method attribute_name do |&block|
         raw = input[attribute_name]
@@ -28,7 +28,7 @@ module Vulcanize
         end
       end
       tmp_attributes = attributes
-      # private attribute_name if private
+      private attribute_name if private
 
       define_method :attributes do
         tmp_attributes
@@ -43,8 +43,10 @@ module Vulcanize
     def each
       return enum_for(:each) unless block_given?
 
-      attributes.each do |attribute, value|
-        yield attribute, public_send(attribute)
+      attributes.each do |attribute, private|
+        unless private
+          yield attribute, public_send(attribute)
+        end
       end
     end
 
