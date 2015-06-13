@@ -12,8 +12,11 @@ module Vulcanize
       attributes[attribute_name] = true
       # from = from.to_sym || attribute_name
       define_method attribute_name do |&block|
+        raw = input[attribute_name]
+
+        return nil if raw.nil? or raw.empty?
+        
         begin
-          raw = input[attribute_name]
           # raw = self.input.fetch(from) { '' }
           # raise MissingAttribute if required && raw.empty?
           # return default if raw.empty?
@@ -31,17 +34,17 @@ module Vulcanize
       end
     end
 
+    def initialize(input={})
+      # handle symbolize keys
+      @input = input
+    end
+
     def each
       return enum_for(:each) unless block_given?
 
       attributes.each do |attribute, value|
         yield attribute, public_send(attribute)
       end
-    end
-
-    def initialize(input={})
-      # handle symbolize keys
-      @input = input
     end
 
     def valid?

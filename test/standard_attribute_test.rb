@@ -70,5 +70,20 @@ module Vulcanize
       assert_equal false, invalid_form.valid?
     end
 
+    def test_attribute_returns_nil_for_missing_input
+      form = klass.new
+      assert_equal nil, form.item
+    end
+
+    def test_attribute_returns_nil_for_nil_input
+      form = klass.new :item => nil
+      assert_equal nil, form.item
+    end
+
+    def test_attribute_returns_nil_for_blank_input
+      form = klass.new :item => ''
+      assert_equal nil, form.item
+    end
+
   end
 end
