@@ -282,6 +282,8 @@ end
 - actual api docs, perhaps formatted as in [AllSystems](https://github.com/CrowdHailer/AllSystems#user-content-docs)
 - Handling collections, not necessary if always using custom collections
 - question mark methods
+- Pretty printing
+- equality
 
 ## Questions
 - Form object with required and default might make sense if default acts as null object?
