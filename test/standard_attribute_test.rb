@@ -1,7 +1,7 @@
 require_relative './test_config'
 
 module Vulcanize
-  class FormTest < MiniTest::Test
+  class StandardAttributeTest < MiniTest::Test
     class Type
       def initialize(value)
         fail ArgumentError unless value == 'valid'
