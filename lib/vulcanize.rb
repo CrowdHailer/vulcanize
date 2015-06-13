@@ -1,12 +1,7 @@
 require "vulcanize/version"
+require "vulcanize/check_box"
 
 module Vulcanize
-  # module Checkbox
-  #   def new(raw)
-  #     return true if raw == 'on'
-  #     raise ArgumentError
-  #   end
-  # end
   class Form
     def self.attributes
       @attributes ||= {}
