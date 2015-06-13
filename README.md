@@ -206,28 +206,28 @@ form.values
 # => {:name => #<Name:0x00000002a579e8 @value="Peter">}
 ```
 
-### Checkboxes
-A common requirement is handling checkboxes, there are two distinct patterns. The optional checkbox and the agreement checkbox.
+### Check boxes
+A common requirement is handling check boxes in HTML forms. There are two distinct requirements when handling these inputs. They are the 'optional check box' and the 'agreement check box'. Vulcanize provides a `CheckBox` coercer to handle these inputs.
 
-##### Optional checkbox
-This checkbox is true when checked and false when left unchecked
+#### Optional check box
+With this check box the user is indicating true when it is checked and false when it is left unchecked. This can be achieved sing the default option
 
 ```rb
-class OptionalForm < Vulcanize::Form
+class OptionForm < Vulcanize::Form
   attribute :recieve_mail, Vulcanize::Checkbox, :default => false
 end
 
-form = OptionalForm.new
+form = OptionForm.new
+
+form.recieve_mail
+# => false
 
 form.valid?
 # => true
-
-form.values
-# => {:recieve_mail => false}
 ```
 
-##### Agreement checkbox
-This checkbox must be selected to continue. The form should be invalid without its selection
+#### Agreement checkbox
+This check box a user must select to continue. The check box checked should return a value of true. The check box left unchecked should invalidate the form.
 
 ```rb
 class AgreementForm < Vulcanize::Form
@@ -236,15 +236,15 @@ end
 
 form = AgreementForm.new
 
+form.agree_to_terms?
+# !! #<Vulcanize::AttributeMissing: is not present>
+
 form.valid?
 # => false
-
-form.errors
-# => {:agree_to_terms => #<Vulcanize::AttributeMissing: is not present>}
 ```
 
-##### Note on Vulcanize::Checkbox
-*Vulcanize checkbox returns true for an input of 'on'. For all other values it raises an InvalidError instead of returning false. This is to help debug if fields are missnamed.*
+#### Note on Checkbox
+*`Vulcanize::CheckBox` returns true for an input of `'on'`. For all other values it raises an `ArgumentError`. This is to help debug if fields are incorrectly named.*
 
 ## Standard types
 Vulcanize encourages using custom domain objects over ruby primitives. it is often miss-guided to use the primitives. I.e. 12 June 2030 is not a valid D.O.B for your users and '<|X!#' is not valid article body. However sometimes it is appropriate or prudent to use the basic types and for that reason you can specify the following as types of attributes.
@@ -267,6 +267,7 @@ end
 - section on testing
 - actual api docs, perhaps formatted as in [AllSystems](https://github.com/CrowdHailer/AllSystems#user-content-docs)
 - Handling collections, not necessary if always using custom collections
+- question mark methods
 
 ## Questions
 - Form object with required and default might make sense if default acts as null object?
