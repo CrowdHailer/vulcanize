@@ -30,6 +30,9 @@ end
 
 The default behavior of an attribute is to coerce the input when valid, return `nil` when there is no input and to raise an error for invalid input.
 
+There is also an each method that will yield each attributes name and value to a block or return and enumerator.
+http://blog.arkency.com/2014/01/ruby-to-enum-for-enumerator/
+
 ```rb
 # Create a form with a valid name
 form = Form.new :name => 'Peter'

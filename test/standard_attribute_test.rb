@@ -19,20 +19,29 @@ module Vulcanize
       @klass = nil
     end
 
-    def test_obtains_item_when_valid
+    def test_attribute_returns_coerced_item_for_valid_input
       form = klass.new :item => 'valid'
       assert_equal Type, form.item.class
     end
 
-    def test_form_is_valid_with_input
+    def test_form_is_valid_with_valid_input
       form = klass.new :item => 'valid'
       assert_equal true, form.valid?
     end
 
-    def test_enumerates
+    def test_passes_attribute_name_and_attribute_value_to_each_block
       form = klass.new :item => 'valid'
-      map = form.map { |name, value| [name, value.class] }
-      assert_equal [[:item, Type]], map
+      array = []
+      form.each { |name, value| array << name << value.class }
+      assert_equal [:item, Type], array
+    end
+
+    def test_returns_an_enumerable_for_each_value
+      form = klass.new :item => 'valid'
+      e = form.each
+      attribute_name, attribute_value = e.next
+      assert_equal :item, attribute_name
+      assert_equal Type, attribute_value.class
     end
 
     def test_raises_error_if_invalid_input

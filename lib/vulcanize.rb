@@ -30,9 +30,10 @@ module Vulcanize
         tmp_attributes
       end
     end
-    include Enumerable
-    # http://blog.arkency.com/2014/01/ruby-to-enum-for-enumerator/
+
     def each
+      return enum_for(:each) unless block_given?
+
       attributes.each do |attribute, value|
         yield attribute, public_send(attribute)
       end
