@@ -100,24 +100,6 @@ All ruby methods can take a block, this allows you to use the form in place of a
 user.email { |raw, error| #Never called, user email method does not use a block }
 ```
 
-### Null input
-A types forge method is not called by default if the input given is nil.
-To work with HTML forms empty string input is also treaded as a nil input.
-
-Using the same form as above
-```rb
-form = Form.new :name => ''
-
-form.valid?
-# => true
-
-form.errors
-# => {}
-
-form.values
-# => {:name => nil}
-```
-
 ### Default attribute
 When declaring attributes a default may be provided for when the input is nil or empty.
 
