@@ -2,6 +2,7 @@ require "vulcanize/version"
 require "vulcanize/check_box"
 
 module Vulcanize
+  AttributeRequired = Class.new(ArgumentError)
   class Form
     def self.attributes
       @attributes ||= {}
@@ -14,12 +15,12 @@ module Vulcanize
       define_method attribute_name do |&block|
         raw = input[attribute_name]
 
-        return default if raw.nil? or raw.empty?
+        missing = raw.nil? || raw.empty?
+
+        fail AttributeRequired if required and missing
+        return default if missing
 
         begin
-          # raw = self.input.fetch(from) { '' }
-          # raise MissingAttribute if required && raw.empty?
-          # return default if raw.empty?
           return type.new raw
         rescue ArgumentError => err
           return block.call raw, err if block

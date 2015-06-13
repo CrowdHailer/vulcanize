@@ -124,7 +124,7 @@ form.name
 ```
 
 ### Required attribute
-Perhaps instead of handling missing values you want the form to be invalid when values are missing. This can be set using the required option.
+Attributes can be specified as required. When the raw value is nil or empty getting the attribute will raise an `AttributeRequired` error and the form will be invalid.
 
 ```rb
 class RequiredForm < Vulcanize::Form
@@ -136,11 +136,8 @@ form = RequiredForm.new :name => ''
 form.valid?
 # => false
 
-form.values
-# => {:name => nil}
-
-form.name.value
-# => 'No name'
+form.name
+# !! Vulcanize::AttributeRequired
 ```
 
 ### Private attribute
@@ -230,7 +227,7 @@ end
 form = AgreementForm.new
 
 form.agree_to_terms?
-# !! #<Vulcanize::AttributeMissing: is not present>
+# !! #<Vulcanize::AttributeRequired: is not present>
 
 form.valid?
 # => false
