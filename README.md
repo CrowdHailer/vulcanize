@@ -2,14 +2,6 @@
 
 Build simple form objects for custom value objects.
 
-# NO CODE HERE
-After spiking this general idea in another [project](https://github.com/CrowdHailer/scorched-blog/blob/master/lib/vulcanize.rb) I have decided to see what clarity can be brought to this project by defining the docs first. So have a read through and add whatever comments you want. Just remember this code doesn't do anything yet.
-Few notes on Documentation Driven Design
-- [one](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
-- [two](http://24ways.org/2010/documentation-driven-design-for-apis)
-
-**[Pull request for comments](https://github.com/CrowdHailer/vulcanize/pull/1)**
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -28,26 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-The first step is to create your domain object. It should throw an ArgumentError if initialized with invalid arguments.
-
-As an example here is a very simple implementation of a name object which has these conditions.
-- It will always be capitalized
-- It must be between 2 and 20 characters
-
-```rb
-class Name
-  def initialize(raw)
-    section = raw[/^\w{2,20}$/]
-    raise ArgumentError unless section
-    @value = section.capitalize
-  end
-
-  attr_reader :value
-end
-```
-
-Attributes in a form are defined with an attribute name and an attribute type. Often these will be the same but it may be the case that a form accepts attributes called first_name and last_name and where they both have the type name.
-We can use our Name value object in a form as follows.
+The attributes of a form are defined with a name and a type. There are also the  optional named parameters explained later. If we have a `Name` domain object we can use it in a vulcanize form as follows. *Notes below on creating domain object*
 
 ```rb
 class Form < Vulcanize::Form
@@ -55,7 +28,7 @@ class Form < Vulcanize::Form
 end
 ```
 
-Basic usage of the form is as follows.
+The default behavior of an attribute is to coerce the input when valid, return `nil` when there is no input and to raise an error for invalid input.
 
 ```rb
 # Create a form with a valid name
@@ -69,8 +42,23 @@ form.email
 
 form.each { |attribute, value| puts "#{attribute}, #{value}" }
 # => :name, #<Name:0x00000002a579e8 @value="Peter">
+```
 
+```rb
+# Create a form with a null name
+form = Form.new :name => nil
 
+form.valid?
+# => true
+
+form.email
+# => nil
+
+form.each { |attribute, value| puts "#{attribute}, #{value}" }
+# => :name, nil>
+```
+
+```rb
 # Create a form with an invalid name
 form = Form.new :name => '<DANGER!!>'
 
@@ -83,28 +71,30 @@ form.email
 
 ### Error Handling
 
-return raw input for editing
+Forms are designed to offer flexible error handling while limiting the ways that invalid can get to the core program. Each attribute method by default raises an error if the raw value is invalid or is missing from an attribute that was required. If an optional block is given then instead of failing the block will be called with the raw value and the error that would have been raised.
+
+Usecase 1: return raw input and error so the user can edit the raw value.
 
 ```rb
 form = Form.new :name => '<DANGER!!>'
 
-value = form.email { |raw| raw }
+value = form.email { |raw, _| raw }
 error = form.email { |_, error| error }
 ```
 
-return default
+Usecase 2: return a default value and error which a user may use.
 
 ```rb
-form = Form.new :name => '<DANGER!!>'
+form = Form.new :start_date => 'bad input'
 
-value = form.start_date { |raw| DateTime.now }
+value = form.start_date { |raw, _| DateTime.now }
 error = form.start_date { |_, error| error }
 ```
 
-This allows you to use the form in place of a domain object.
+All ruby methods can take a block, this allows you to use the form in place of a domain object.
 
 ```rb
-user.email { |raw, error| #Never called, as needed because user email always valid }
+user.email { |raw, error| #Never called, user email method does not use a block }
 ```
 
 ### Null input
@@ -206,6 +196,27 @@ form.values
 # => {:name => #<Name:0x00000002a579e8 @value="Peter">}
 ```
 
+### Domain objects
+
+The first step is to create your domain object. It should throw an ArgumentError if initialized with invalid arguments.
+
+As an example here is a very simple implementation of a name object which has these conditions.
+- It will always be capitalized
+- It must be between 2 and 20 characters
+
+```rb
+class Name
+  def initialize(raw)
+    section = raw[/^\w{2,20}$/]
+    raise ArgumentError unless section
+    @value = section.capitalize
+  end
+
+  attr_reader :value
+end
+```
+
+
 ### Check boxes
 A common requirement is handling check boxes in HTML forms. There are two distinct requirements when handling these inputs. They are the 'optional check box' and the 'agreement check box'. Vulcanize provides a `CheckBox` coercer to handle these inputs.
 
@@ -275,6 +286,15 @@ end
 - Check out virtus Array and Hash they might need to be included in awesomeness
   - There is no need for and array or hash type if Always defining collections
   - general nesting structure checkout useuful music batch
+
+## Change log
+
+Developed using Documentation Driven Development.
+Few notes on Documentation Driven Development.
+- [one](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
+- [two](http://24ways.org/2010/documentation-driven-design-for-apis)
+
+**[Pull request for block errors](https://github.com/CrowdHailer/vulcanize/pull/1)**
 
 ## Contributing
 There is no code here yet. So at the moment feel free to contribute around discussing these docs. pull request with your suggestion sounds perfect.
