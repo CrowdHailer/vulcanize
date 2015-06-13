@@ -101,7 +101,7 @@ user.email { |raw, error| #Never called, user email method does not use a block 
 ```
 
 ### Default attribute
-When declaring attributes a default may be provided for when the input is nil or empty.
+Attributes may have a default value that will be returned instead of nil when the raw value is nil or empty.
 
 ```rb
 class NullName
@@ -119,11 +119,8 @@ form = DefaultForm.new :name => ''
 form.valid?
 # => true
 
-form.errors
-# => {:name => #<Vulcanize::AttributeMissing: is not present>}
-
-form.values
-# => {:name =>nil}
+form.name
+# => #<NullName:0x00000002aafb98>
 ```
 
 ### Required attribute

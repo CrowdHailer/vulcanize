@@ -14,8 +14,8 @@ module Vulcanize
       define_method attribute_name do |&block|
         raw = input[attribute_name]
 
-        return nil if raw.nil? or raw.empty?
-        
+        return default if raw.nil? or raw.empty?
+
         begin
           # raw = self.input.fetch(from) { '' }
           # raise MissingAttribute if required && raw.empty?
