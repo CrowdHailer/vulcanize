@@ -150,8 +150,7 @@ class PasswordForm < Vulcanize::Form
 
   def valid?
     unless password == password_confirmation
-      error = ArgumentError.new 'does not match'
-      errors.add(password_confirmation, error)
+      return false
     end
     super
   end
