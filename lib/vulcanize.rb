@@ -1,5 +1,6 @@
 require "vulcanize/version"
+require "vulcanize/form"
+require "vulcanize/check_box"
 
 module Vulcanize
-  # Your code goes here...
 end

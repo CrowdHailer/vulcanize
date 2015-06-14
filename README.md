@@ -1,14 +1,6 @@
 # Vulcanize
 
-Build simple form objects for custom value objects.
-
-# NO CODE HERE
-After spiking this general idea in another [project](https://github.com/CrowdHailer/scorched-blog/blob/master/lib/vulcanize.rb) I have decided to see what clarity can be brought to this project by defining the docs first. So have a read through and add whatever comments you want. Just remember this code doesn't do anything yet.
-Few notes on Documentation Driven Design
-- [one](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
-- [two](http://24ways.org/2010/documentation-driven-design-for-apis)
-
-**[Pull request for comments](https://github.com/CrowdHailer/vulcanize/pull/1)**
+Form objects to handle coercing user input.
 
 ## Installation
 
@@ -28,88 +20,80 @@ Or install it yourself as:
 
 ## Usage
 
-The first step is to create your value object. Your domain specific value object should implement the `typetanic/forge` protocol. The forge method can take any number of arguments to create a new value. It should also accept a block which is called with the error should creating the value object fail.
-
-The forging of a value object should carry out all coercions and validations specific to that type. Vulcanize forms only know is a value is invalid or missing, not the reasons for a value to be invalid.
-
-As an example here is a very simple implementation of a name object which has these conditions.
-- It will always be capitalized
-- It must be between 2 and 20 characters
-
-```rb
-class Name
-  def initialize(raw)
-    section = raw[/^\w{2,20}$/]
-    raise ArgumentError, 'is not valid' unless section
-    @value = section.capitalize
-  end
-
-  attr_reader :value
-
-  def self.forge(raw)
-    new raw
-  rescue ArgumentError => err
-    yield err
-  end
-end
-```
-
-Attributes in a form are defined with an attribute name and an attribute type. Often these will be the same but it may be the case that a form accepts attributes called first_name and last_name and where they both have the type name.
-We can use our Name value object in a form as follows.
+Forms consist of one or more attributes that are defined with a name, type and optional named parameters. Types are used to coerce the raw input and should be responsible for deciding a given inputs validity. If we have a `Name` domain object we can use it in a vulcanize form as follows. *Notes below on creating domain object*
 
 ```rb
 class Form < Vulcanize::Form
   attribute :name, Name
 end
+```
 
+The default behavior of an attribute is to coerce the input when it is valid, return `nil` when there is no input and to raise an error for invalid input.
+
+```rb
 # Create a form with a valid name
 form = Form.new :name => 'Peter'
 
 form.valid?
 # => true
 
-form.errors
-# => {}
+form.email
+# => #<Name:0x00000002a579e8 @value="Peter">
+```
 
-form.values
-# => {:name => #<Name:0x00000002a579e8 @value="Peter">}
+```rb
+# Create a form with a null name
+form = Form.new :name => nil
 
+form.valid?
+# => true
+
+form.email
+# => nil
+```
+
+```rb
 # Create a form with an invalid name
 form = Form.new :name => '<DANGER!!>'
 
 form.valid?
 # => false
 
-form.validate!
-# !! Vulcanize::InvalidForm
-
-form.errors
-# => {:name => #<ArgumentError: is not valid>}
-
-form.values
-# => {:name => '<DANGER!!>'}
+form.email
+# !! ArgumentError
 ```
 
-### Null input
-A types forge method is not called by default if the input given is nil.
-To work with HTML forms empty string input is also treaded as a nil input.
+### Error Handling
 
-Using the same form as above
+Forms are designed to offer flexible error handling while limiting the ways that invalid can pass through to the core program. Each attribute method raises an error if the coercion fails or if raw input is missing from an attribute that was required. If a block is passed to the method then instead of failing the block will be called with the raw value and the error that would have been raised. This allows several different ways to handle bad input.
+
+Usecase 1: return raw input and error so the user can edit the raw value.
+
 ```rb
-form = Form.new :name => ''
+form = Form.new :name => '<DANGER!!>'
 
-form.valid?
-# => true
+value = form.email { |raw, _| raw }
+error = form.email { |_, error| error }
+```
 
-form.errors
-# => {}
+Usecase 2: return a default value and error which a user may use.
 
-form.values
-# => {:name => nil}
+```rb
+form = Form.new :start_date => 'bad input'
+
+value = form.start_date { |raw, _| DateTime.now }
+error = form.start_date { |_, error| error }
+```
+### Note
+
+All Ruby methods can take a block, this allows you to use the form in place of a domain object.
+
+```rb
+user.email { |raw, error| #Never called, user email method does not use a block }
 ```
 
 ### Default attribute
-When declaring attributes a default may be provided for when the input is nil or empty.
+Attributes may have a default value that will be returned instead of nil when the raw value is nil or empty.
 
 ```rb
 class NullName
@@ -127,15 +111,12 @@ form = DefaultForm.new :name => ''
 form.valid?
 # => true
 
-form.errors
-# => {:name => #<Vulcanize::AttributeMissing: is not present>}
-
-form.values
-# => {:name =>nil}
+form.name
+# => #<NullName:0x00000002aafb98>
 ```
 
 ### Required attribute
-Perhaps instead of handling missing values you want the form to be invalid when values are missing. This can be set using the required option.
+Attributes can be specified as being required. When the raw value is nil or empty retrieving the attribute vale will raise an `AttributeRequired` error and the form will be invalid.
 
 ```rb
 class RequiredForm < Vulcanize::Form
@@ -147,11 +128,8 @@ form = RequiredForm.new :name => ''
 form.valid?
 # => false
 
-form.values
-# => {:name => nil}
-
-form.name.value
-# => 'No name'
+form.name
+# !! Vulcanize::AttributeRequired
 ```
 
 ### Private attribute
@@ -164,8 +142,7 @@ class PasswordForm < Vulcanize::Form
 
   def valid?
     unless password == password_confirmation
-      error = ArgumentError.new 'does not match'
-      errors.add(password_confirmation, error)
+      return false
     end
     super
   end
@@ -173,14 +150,14 @@ end
 ```
 
 ### Renamed attribute
-Vulcanize can also be used to handle any input that can be cast as a hash. JSON data for example. It may be that input fields need renaming. That can be done with the from attribute
+Vulcanize can also be used to handle any input that can be cast as a hash. JSON data for example. It may be that input fields need renaming. That can be done with the 'from' parameter.
 
 ```rb
 class RenameForm < Vulcanize::Form
   attribute :name, Name, :from => 'display_name'
 end
 
-form = RenameForm.new :display_name => 'Peter'
+form = RenameForm.new 'display_name' => 'Peter'
 
 form.valid?
 # => true
@@ -189,28 +166,49 @@ form.values
 # => {:name => #<Name:0x00000002a579e8 @value="Peter">}
 ```
 
-### Checkboxes
-A common requirement is handling checkboxes, there are two distinct patterns. The optional checkbox and the agreement checkbox.
+> Possible extension symbol option. if set true recases to symbol. if not leaves as input. default true. from could as be called field.
 
-##### Optional checkbox
-This checkbox is true when checked and false when left unchecked
+### Domain objects
+
+The first step is to create your domain object. It should throw an ArgumentError if initialized with invalid arguments.
+
+As an example here is a very simple implementation of a name object which has these conditions.
+- It will always be capitalized
+- It must be between 2 and 20 characters
 
 ```rb
-class OptionalForm < Vulcanize::Form
+class Name
+  def initialize(raw)
+    section = raw[/^\w{2,20}$/]
+    raise ArgumentError unless section
+    @value = section.capitalize
+  end
+
+  attr_reader :value
+end
+```
+### Check boxes
+A common requirement is handling check boxes in HTML forms. There are two distinct requirements when handling these inputs. They are the 'optional check box' and the 'agreement check box'. Vulcanize provides a `CheckBox` coercer to handle these inputs.
+
+#### Optional check box
+With this check box the user is indicating true when it is checked and false when it is left unchecked. This can be achieved sing the default option
+
+```rb
+class OptionForm < Vulcanize::Form
   attribute :recieve_mail, Vulcanize::Checkbox, :default => false
 end
 
-form = OptionalForm.new
+form = OptionForm.new
+
+form.recieve_mail
+# => false
 
 form.valid?
 # => true
-
-form.values
-# => {:recieve_mail => false}
 ```
 
-##### Agreement checkbox
-This checkbox must be selected to continue. The form should be invalid without its selection
+#### Agreement checkbox
+This check box a user must select to continue. The check box checked should return a value of true. The check box left unchecked should invalidate the form.
 
 ```rb
 class AgreementForm < Vulcanize::Form
@@ -219,17 +217,18 @@ end
 
 form = AgreementForm.new
 
+form.agree_to_terms?
+# !! #<Vulcanize::AttributeRequired: is not present>
+
 form.valid?
 # => false
-
-form.errors
-# => {:agree_to_terms => #<Vulcanize::AttributeMissing: is not present>}
 ```
 
-##### Note on Vulcanize::Checkbox
-*Vulcanize checkbox returns true for an input of 'on'. For all other values it raises an InvalidError instead of returning false. This is to help debug if fields are missnamed.*
+#### Note on Checkbox
+*`Vulcanize::CheckBox` returns true for an input of `'on'`. For all other values it raises an `ArgumentError`. This is to help debug if fields are incorrectly named.*
 
 ## Standard types
+**NOT IMPLEMENTED**
 Vulcanize encourages using custom domain objects over ruby primitives. it is often miss-guided to use the primitives. I.e. 12 June 2030 is not a valid D.O.B for your users and '<|X!#' is not valid article body. However sometimes it is appropriate or prudent to use the basic types and for that reason you can specify the following as types of attributes.
 
 - String
@@ -241,15 +240,19 @@ Often a reason to use standard types is because domain limitations on an input h
 
 ```rb
 class ArticleBody < String
-  def self.forge(raw)
-    new raw
-  end
 end
 ```
 ## TODO
 - section on testing
 - actual api docs, perhaps formatted as in [AllSystems](https://github.com/CrowdHailer/AllSystems#user-content-docs)
 - Handling collections, not necessary if always using custom collections
+- question mark methods
+- Pretty printing
+- equality
+- docs
+form.each { |attribute, value| puts "#{attribute}, #{value}" }
+# => :name, #<Name:0x00000002a579e8 @value="Peter">
+- symbolize input
 
 ## Questions
 - Form object with required and default might make sense if default acts as null object?
@@ -257,6 +260,15 @@ end
 - Check out virtus Array and Hash they might need to be included in awesomeness
   - There is no need for and array or hash type if Always defining collections
   - general nesting structure checkout useuful music batch
+
+## Change log
+
+Developed using Documentation Driven Development.
+Few notes on Documentation Driven Development.
+- [one](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
+- [two](http://24ways.org/2010/documentation-driven-design-for-apis)
+
+**[Pull request for block errors](https://github.com/CrowdHailer/vulcanize/pull/1)**
 
 ## Contributing
 There is no code here yet. So at the moment feel free to contribute around discussing these docs. pull request with your suggestion sounds perfect.
