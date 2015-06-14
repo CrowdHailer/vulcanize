@@ -7,9 +7,11 @@ module Vulcanize
 
     def self.attribute(attribute_name, type, required: false, default: nil, from: nil, private: false)
       attributes[attribute_name] = private
-      # from = from.to_sym || attribute_name
+
+      from = from || attribute_name
+
       define_method attribute_name do |&block|
-        raw = input[attribute_name]
+        raw = input[from]
 
         missing = raw.nil? || raw.empty?
 

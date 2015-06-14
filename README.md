@@ -150,15 +150,14 @@ end
 ```
 
 ### Renamed attribute
-**NOT IMPLEMENTED**
-Vulcanize can also be used to handle any input that can be cast as a hash. JSON data for example. It may be that input fields need renaming. That can be done with the from attribute
+Vulcanize can also be used to handle any input that can be cast as a hash. JSON data for example. It may be that input fields need renaming. That can be done with the 'from' parameter.
 
 ```rb
 class RenameForm < Vulcanize::Form
   attribute :name, Name, :from => 'display_name'
 end
 
-form = RenameForm.new :display_name => 'Peter'
+form = RenameForm.new 'display_name' => 'Peter'
 
 form.valid?
 # => true
