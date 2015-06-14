@@ -33,7 +33,9 @@ module Vulcanize
     end
 
     def initialize(input={})
-      # handle symbolize keys
+      input.keys.each do |key|
+        input[(key.to_sym rescue key) || key] = input.delete(key)
+      end
       @input = input
     end
 
@@ -50,7 +52,6 @@ module Vulcanize
     def valid?
       attributes.keys.each(&method(:send))
       true
-      # handle argument error an missing error.
     rescue
       false
     end

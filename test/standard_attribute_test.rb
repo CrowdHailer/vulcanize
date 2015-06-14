@@ -45,6 +45,11 @@ module Vulcanize
       assert_equal TestType, attribute_value.class
     end
 
+    def test_attribute_returns_coerced_item_for_valid_input_from_string_key
+      form = klass.new 'item' => 'valid'
+      assert_equal TestType, form.item.class
+    end
+
     def test_attribute_raises_error_if_input_was_invalid
       assert_raises ArgumentError do
         invalid_form.item
