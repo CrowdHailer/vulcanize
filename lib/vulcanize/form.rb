@@ -6,7 +6,6 @@ module Vulcanize
     end
 
     def self.attribute(attribute_name, type, required: false, default: nil, from: nil, private: false)
-      # attribute_name = attribute_name.to_sym
       attributes[attribute_name] = private
       # from = from.to_sym || attribute_name
       define_method attribute_name do |&block|

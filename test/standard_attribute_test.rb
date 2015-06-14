@@ -85,5 +85,14 @@ module Vulcanize
       assert_equal nil, form.item
     end
 
+    def test_attribute_name_can_be_defined_as_a_string
+      # This test is not necessary. In fact removing the symbolize coercion would allow any setup.
+      # klass = Class.new Form
+      # klass.attribute 'item', TestType
+      # form = klass.new :item => 'valid'
+      # puts form.attributes
+      # assert_equal TestType, valid_form.item.class
+    end
+
   end
 end
