@@ -166,6 +166,8 @@ form.values
 # => {:name => #<Name:0x00000002a579e8 @value="Peter">}
 ```
 
+> Possible extension symbol option. if set true recases to symbol. if not leaves as input. default true. from could as be called field.
+
 ### Domain objects
 
 The first step is to create your domain object. It should throw an ArgumentError if initialized with invalid arguments.
