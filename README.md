@@ -2,6 +2,8 @@
 
 Form objects to handle coercing user input.
 
+[![Gem Version](https://badge.fury.io/rb/vulcanize.svg?style=flat-square)](http://badge.fury.io/rb/vulcanize) [![GitHub issues](https://img.shields.io/github/issues/crowdhailer/vulcanize.svg)](https://github.com/CrowdHailer/vulcanize/issues)
+
 ## Installation
 
 Add this line to your application's Gemfile:
