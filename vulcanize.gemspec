@@ -7,10 +7,10 @@ Gem::Specification.new do |spec|
   spec.name          = "vulcanize"
   spec.version       = Vulcanize::VERSION
   spec.authors       = ["Peter Saxton"]
-  spec.email         = ["peterhsaxton@gmail.com"]
-  spec.summary       = %q{Form objects built on the typetanic forge protocol}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.email         = ["vulcanize@workshop14.io"]
+  spec.summary       = %q{Form objects for coercing user input to domain specific objects}
+  spec.description   = %q{Forms consist of one or more attributes that are defined with a name, type and optional parameters. Plain ruby classes are used to represent attribute type and should be responsible for coercing the raw input and deciding an inputs validity.}
+  spec.homepage      = "https://github.com/CrowdHailer/vulcanize"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
