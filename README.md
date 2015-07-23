@@ -1,6 +1,6 @@
 # Vulcanize
 
-Form objects to handle coercing user input.
+Form objects to handle coercing user input. [Blog post explaining the logic behind form objects](http://insights.workshop14.io/2015/07/23/application-border-control-with-ruby-form-objects.html)
 
 [![Gem Version](https://badge.fury.io/rb/vulcanize.svg?style=flat-square)](http://badge.fury.io/rb/vulcanize) [![GitHub issues](https://img.shields.io/github/issues/crowdhailer/vulcanize.svg)](https://github.com/CrowdHailer/vulcanize/issues)
 
