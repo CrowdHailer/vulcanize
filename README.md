@@ -189,6 +189,11 @@ class Name
   attr_reader :value
 end
 ```
+
+This [post](http://insights.workshop14.io/2015/07/15/value-objects-in-ruby.html) explains the rational behind value object.
+
+For an example [email value object](https://github.com/CrowdHailer/typetanic/blob/master/lib/typetanic/email.rb) check [typetanic](https://github.com/CrowdHailer/typetanic)
+
 ### Check boxes
 A common requirement is handling check boxes in HTML forms. There are two distinct requirements when handling these inputs. They are the 'optional check box' and the 'agreement check box'. Vulcanize provides a `CheckBox` coercer to handle these inputs.
 
