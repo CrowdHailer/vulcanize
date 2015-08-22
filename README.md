@@ -230,12 +230,9 @@ form.valid?
 *`Vulcanize::CheckBox` returns true for an input of `'on'`. For all other values it raises an `ArgumentError`. This is to help debug if fields are incorrectly named.*
 
 ## Standard types
-**NOT IMPLEMENTED**
 Vulcanize encourages using custom domain objects over ruby primitives. it is often miss-guided to use the primitives. I.e. 12 June 2030 is not a valid D.O.B for your users and '<|X!#' is not valid article body. However sometimes it is appropriate or prudent to use the basic types and for that reason you can specify the following as types of attributes.
 
 - String
-- Integer
-- Float
 
 ##### Note on using standard types
 Often a reason to use standard types is because domain limitations on an input have not yet been defined. Instead of staying with strings consider using this minimal implementation.
