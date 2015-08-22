@@ -39,7 +39,7 @@ form = Form.new :name => 'Peter'
 form.valid?
 # => true
 
-form.email
+form.name
 # => #<Name:0x00000002a579e8 @value="Peter">
 ```
 
@@ -50,7 +50,7 @@ form = Form.new :name => nil
 form.valid?
 # => true
 
-form.email
+form.name
 # => nil
 ```
 
@@ -61,7 +61,7 @@ form = Form.new :name => '<DANGER!!>'
 form.valid?
 # => false
 
-form.email
+form.name
 # !! ArgumentError
 ```
 
@@ -74,8 +74,8 @@ Usecase 1: return raw input and error so the user can edit the raw value.
 ```rb
 form = Form.new :name => '<DANGER!!>'
 
-value = form.email { |raw, _| raw }
-error = form.email { |_, error| error }
+value = form.name { |raw, _| raw }
+error = form.name { |_, error| error }
 ```
 
 Usecase 2: return a default value and error which a user may use.
