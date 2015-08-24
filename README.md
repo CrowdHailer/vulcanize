@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ## Usage
 
-Forms consist of one or more attributes that are defined with a name, type and optional named parameters. Types are used to coerce the raw input and should be responsible for deciding a given inputs validity. If we have a `Name` domain object we can use it in a vulcanize form as follows. *Notes below on creating domain object*
+Forms consist of one or more attributes that are defined with a name, type and optional named parameters. Types are used to coerce the raw input and should be responsible for deciding a given inputs validity. If we have a `Name` domain object we can use it in a vulcanize form as follows. *[Notes below on creating domain object](https://github.com/CrowdHailer/vulcanize#user-content-domain-objects)*
 
 ```rb
 class Form < Vulcanize::Form
