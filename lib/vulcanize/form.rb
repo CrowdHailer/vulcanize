@@ -1,5 +1,6 @@
 module Vulcanize
-  AttributeRequired = Class.new(ArgumentError)
+  AttributeRequired = Class.new ArgumentError
+  
   class Form
     def self.attributes
       @attributes ||= {}
